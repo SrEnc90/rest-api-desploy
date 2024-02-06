@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Probar la Api Rest</title>
+
+    <style>
+
+        article {
+            border: 1px solid #ccc;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        img {
+            width: 320px;
+            height: auto;
+            border-radius: 8%;
+            max-width: 100%;
+        }
+
+    </style>
+
+    <script type="module">
+
+        //! Para probarlo en la página debemos usar servor: en la consola colocar npx servor ./web (la carpeta dónde está ubicada la página estática)
+        fetch('http://localhost:1234/movies')
+            .then(res => res.json())
+            .then(movies => {
+                const html = movies.map(movie => {
+                    return `
+                            <article data-id="${movie.id}">
+                                <h2>${movie.title}</h2>
+                                <img src="${movie.poster}" alt="${movie.title}"/>
+                                <p>${movie.director}</p>
+                                <button>Eliminar</button>    
+                            </article>
+                    `
+                }).join('')
+
+                document.querySelector('main').innerHTML = html;
+            });
+
+            document.addEventListener('click', e => {
+                if(e.target.matches('button')) {
+                    const article = e.target.closest('article');
+                    const id = article.dataset.id;
+
+                    fetch(`http://localhost:1234/movies/${id}`, { method: 'DELETE' })
+                        .then(res => {
+                            if(res.ok) {
+                                article.remove();
+                            }
+                            // console.error(res);
+                        })
+                }
+            })
+    </script>
+
+</head>
+<body>
+    <main></main>
+</body>
+</html>
